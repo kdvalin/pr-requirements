@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 
 function has_related_function(body: string | undefined): boolean {
+  core.info(body || 'empty body')
   if (!body) {
     return false
   }

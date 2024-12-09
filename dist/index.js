@@ -29973,6 +29973,7 @@ exports.run = run;
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
 function has_related_function(body) {
+    core.info(body || 'empty body');
     if (!body) {
         return false;
     }
