@@ -29995,9 +29995,7 @@ async function run() {
         repo: github.context.issue.repo,
         issue_number: github.context.issue.number
     });
-    const related_issue_check = core.getBooleanInput('related_issue', {
-        required: true
-    });
+    const related_issue_check = core.getBooleanInput('related_issue');
     if (related_issue_check &&
         (!pr.data.body || !has_related_function(pr.data.body))) {
         core.setFailed('PR has no related issue');

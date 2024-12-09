@@ -28,9 +28,7 @@ export async function run(): Promise<void> {
     issue_number: github.context.issue.number
   })
 
-  const related_issue_check = core.getBooleanInput('related_issue', {
-    required: true
-  })
+  const related_issue_check = core.getBooleanInput('related_issue')
   if (
     related_issue_check &&
     (!pr.data.body || !has_related_function(pr.data.body))
