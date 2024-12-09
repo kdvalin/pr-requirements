@@ -29933,10 +29933,17 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const main_1 = __nccwpck_require__(1730);
 const core = __importStar(__nccwpck_require__(7484));
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-(0, main_1.run)().catch(error => {
-    if (error instanceof Error)
+try {
+    (0, main_1.run)();
+}
+catch (error) {
+    if (error instanceof Error) {
         core.setFailed(error.message);
-});
+    }
+    else {
+        core.setFailed('Unknown error');
+    }
+}
 
 
 /***/ }),
@@ -29977,12 +29984,12 @@ const github = __importStar(__nccwpck_require__(3228));
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
  */
-async function run() {
+function run() {
     if (github.context.eventName !== 'pull_request') {
         core.setFailed(`This action expects pull_request event types, received ${github.context.eventName}`);
         return;
     }
-    const octokit = github.getOctokit(core.getInput('myToken'));
+    github.getOctokit(core.getInput('myToken'));
 }
 
 
