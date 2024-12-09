@@ -12,5 +12,5 @@ export async function run(): Promise<void> {
     )
     return
   }
-  const octokit = github.getOctokit(core.getInput('myToken'))
+  const octokit = github.getOctokit(core.getInput('myToken'));
 }
