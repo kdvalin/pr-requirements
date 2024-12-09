@@ -29972,6 +29972,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = run;
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
+function has_related_function(body) {
+    if (body) {
+        core.info('yay');
+    }
+    return false;
+}
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -29989,7 +29995,14 @@ async function run() {
         repo: github.context.issue.repo,
         issue_number: github.context.issue.number
     });
-    core.info(pr.data.body || 'Empty body');
+    const related_issue_check = core.getBooleanInput('related_issue', {
+        required: true
+    });
+    if (related_issue_check &&
+        (!pr.data.body || !has_related_function(pr.data.body))) {
+        core.setFailed('PR has no related issue');
+        return;
+    }
 }
 
 

@@ -1,6 +1,12 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
+function has_related_function(body: string): boolean {
+  if (body) {
+    core.info('yay')
+  }
+  return false
+}
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -22,5 +28,14 @@ export async function run(): Promise<void> {
     issue_number: github.context.issue.number
   })
 
-  core.info(pr.data.body || 'Empty body')
+  const related_issue_check = core.getBooleanInput('related_issue', {
+    required: true
+  })
+  if (
+    related_issue_check &&
+    (!pr.data.body || !has_related_function(pr.data.body))
+  ) {
+    core.setFailed('PR has no related issue')
+    return
+  }
 }
