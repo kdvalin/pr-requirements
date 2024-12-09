@@ -29995,7 +29995,7 @@ async function run() {
     });
     const related_issue_check = core.getBooleanInput('related_issue');
     if (related_issue_check &&
-        (!pr.data.body || !has_related_function(pr.data.body))) {
+        (!pr.data.body_html || !has_related_function(pr.data.body_html))) {
         core.setFailed('PR has no related issue');
         return;
     }
