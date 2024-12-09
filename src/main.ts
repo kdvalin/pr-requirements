@@ -1,7 +1,10 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
-function has_related_function(body: string): boolean {
+function has_related_function(body: string | undefined): boolean {
+  if (!body) {
+    return false
+  }
   core.info(body)
   return false
 }
@@ -27,10 +30,7 @@ export async function run(): Promise<void> {
   })
 
   const related_issue_check = core.getBooleanInput('related_issue')
-  if (
-    related_issue_check &&
-    (!pr.data.body_html || !has_related_function(pr.data.body_html))
-  ) {
+  if (related_issue_check && !has_related_function(pr.data.body_html)) {
     core.setFailed('PR has no related issue')
     return
   }

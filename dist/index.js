@@ -29973,6 +29973,9 @@ exports.run = run;
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
 function has_related_function(body) {
+    if (!body) {
+        return false;
+    }
     core.info(body);
     return false;
 }
@@ -29994,8 +29997,7 @@ async function run() {
         issue_number: github.context.issue.number
     });
     const related_issue_check = core.getBooleanInput('related_issue');
-    if (related_issue_check &&
-        (!pr.data.body_html || !has_related_function(pr.data.body_html))) {
+    if (related_issue_check && !has_related_function(pr.data.body_html)) {
         core.setFailed('PR has no related issue');
         return;
     }
