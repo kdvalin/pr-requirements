@@ -14,4 +14,5 @@ export function run(): void {
   }
   const token = core.getInput('GITHUB_TOKEN', { required: true })
   github.getOctokit(token)
+  core.info(`${github.context.issue.number}`)
 }
