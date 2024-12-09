@@ -2,9 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 
 function has_related_function(body: string): boolean {
-  if (body) {
-    core.info('yay')
-  }
+  core.info(body)
   return false
 }
 /**
