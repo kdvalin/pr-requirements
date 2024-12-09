@@ -29989,7 +29989,7 @@ async function run() {
         repo: github.context.issue.repo,
         issue_number: github.context.issue.number
     });
-    core.debug(pr.data.body || 'Empty body');
+    core.info(pr.data.body || 'Empty body');
 }
 
 
