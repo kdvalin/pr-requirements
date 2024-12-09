@@ -29989,7 +29989,8 @@ function run() {
         core.setFailed(`This action expects pull_request event types, received ${github.context.eventName}`);
         return;
     }
-    github.getOctokit(core.getInput('myToken'));
+    const token = core.getInput('GITHUB_TOKEN', { required: true });
+    github.getOctokit(token);
 }
 
 

@@ -12,6 +12,6 @@ export function run(): void {
     )
     return
   }
-  const token = core.getInput('GITHUB_TOKEN', {required: true})
-  github.getOctokit(token);
+  const token = core.getInput('GITHUB_TOKEN', { required: true })
+  github.getOctokit(token)
 }
