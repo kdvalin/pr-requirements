@@ -29972,13 +29972,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = run;
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
-function has_related_function(body) {
-    core.info(body || 'empty body');
+function has_related_issue(body) {
     if (!body) {
         return false;
     }
-    core.info(body);
-    return false;
+    return body.search(/This relates to(:)? #[0-9]+/) != -1;
 }
 /**
  * The main function for the action.
@@ -29998,7 +29996,7 @@ async function run() {
         issue_number: github.context.issue.number
     });
     const related_issue_check = core.getBooleanInput('related_issue');
-    if (related_issue_check && !has_related_function(pr.data.body_html)) {
+    if (related_issue_check && !has_related_issue(pr.data.body)) {
         core.setFailed('PR has no related issue');
         return;
     }

@@ -1,13 +1,11 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
-function has_related_function(body: string | undefined): boolean {
-  core.info(body || 'empty body')
+function has_related_issue(body: string | null | undefined): boolean {
   if (!body) {
     return false
   }
-  core.info(body)
-  return false
+  return body.search(/This relates to(:)? #[0-9]+/) != -1
 }
 /**
  * The main function for the action.
@@ -31,7 +29,7 @@ export async function run(): Promise<void> {
   })
 
   const related_issue_check = core.getBooleanInput('related_issue')
-  if (related_issue_check && !has_related_function(pr.data.body_html)) {
+  if (related_issue_check && !has_related_issue(pr.data.body)) {
     core.setFailed('PR has no related issue')
     return
   }
