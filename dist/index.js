@@ -29972,11 +29972,33 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = run;
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
-function has_related_issue(body) {
+async function is_valid_issue(issue_num, octokit) {
+    const issue = await octokit.rest.issues.get({
+        repo: github.context.issue.repo,
+        owner: github.context.issue.owner,
+        issue_number: issue_num
+    });
+    if (issue.status >= 400) {
+        // 400+ is error zone
+        return false;
+    }
+    return !issue.data.pull_request;
+}
+async function has_related_issue(body, octokit) {
     if (!body) {
         return false;
     }
-    return body.search(/This relates to(:)? #[0-9]+/) != -1;
+    const issue_matches = body.match(/#[0-9]+/);
+    if (!issue_matches) {
+        return false;
+    }
+    for (const match of issue_matches) {
+        const valid_issue = await is_valid_issue(parseInt(match.substring(1)), octokit);
+        if (valid_issue) {
+            return true;
+        }
+    }
+    return false;
 }
 /**
  * The main function for the action.
@@ -29996,9 +30018,12 @@ async function run() {
         issue_number: github.context.issue.number
     });
     const related_issue_check = core.getBooleanInput('related_issue');
-    if (related_issue_check && !has_related_issue(pr.data.body)) {
-        core.setFailed('PR has no related issue');
-        return;
+    if (related_issue_check) {
+        const pr_has_related_issue = await has_related_issue(pr.data.body, octokit);
+        if (!pr_has_related_issue) {
+            core.setFailed('PR has no related issue');
+            return;
+        }
     }
 }
 
