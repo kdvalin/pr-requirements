@@ -15,6 +15,16 @@ inputs:
   related_issue:
     description: 'Check if PR has a related issue'
     default: 'true'
+  jira_ticket:
+    description: 'Check if a related Jira Ticket has been mentioned'
+    default: 'false'
+  jira_project:
+    description:
+      'What project the issue is in within Jira, only applies if jira_ticket is
+      true'
+    default: 'Example'
+  jira_url:
+    description: 'URL to jira instance, only supporting public servers for now'
 
 # Define your outputs here.
 outputs:

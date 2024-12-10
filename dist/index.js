@@ -29972,6 +29972,17 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = run;
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
+function get_jira_slug(content, project) {
+    if (!content)
+        return null;
+    const prefix = 'Relates to JIRA: ';
+    const reg = new RegExp(`${prefix}${project}-[0-9]+`);
+    const matches = content.match(reg);
+    if (!matches || matches.length === 0) {
+        return null;
+    }
+    return matches[0].substring(prefix.length);
+}
 async function is_valid_issue(issue_num, octokit) {
     const issue = await octokit.rest.issues.get({
         repo: github.context.issue.repo,
@@ -30012,17 +30023,51 @@ async function run() {
     const token = core.getInput('GITHUB_TOKEN', { required: true });
     const octokit = github.getOctokit(token);
     core.info(`Looking at PR ${github.context.issue.number}`);
-    const pr = await octokit.rest.issues.get({
+    const repo_info = {
         owner: github.context.issue.owner,
         repo: github.context.issue.repo,
         issue_number: github.context.issue.number
-    });
+    };
+    const pr = await octokit.rest.issues.get(repo_info);
+    const pr_body = pr.data.body;
     const related_issue_check = core.getBooleanInput('related_issue');
     if (related_issue_check) {
-        const pr_has_related_issue = await has_related_issue(pr.data.body, octokit);
+        const pr_has_related_issue = await has_related_issue(pr_body, octokit);
         if (!pr_has_related_issue) {
             core.setFailed('PR has no related issue');
             return;
+        }
+    }
+    const jira_issue_check = core.getBooleanInput('jira_ticket');
+    if (jira_issue_check) {
+        const jira_project = core.getInput('jira_project');
+        const jira_url = core.getInput('jira_url');
+        if (!jira_url) {
+            core.setFailed('Need jira URL to have a comment containing the jira ticket');
+            return;
+        }
+        if (!jira_project) {
+            core.setFailed('Need project stub for linking to jira ticket');
+            return;
+        }
+        const jira_slug = get_jira_slug(pr_body, jira_project);
+        if (!jira_slug) {
+            core.setFailed('PR does not have a Jira ticket associated with it');
+            return;
+        }
+        const comment_body = `This relates to [${jira_slug}](${jira_url}/browse/${jira_slug})`;
+        const comments = await octokit.rest.issues.listComments(repo_info);
+        let comment_exists = false;
+        comments.data.forEach(val => {
+            if (val.body === comment_body) {
+                comment_exists = true;
+            }
+        });
+        if (!comment_exists) {
+            await octokit.rest.issues.createComment({
+                ...repo_info,
+                body: comment_body
+            });
         }
     }
 }
