@@ -29975,12 +29975,13 @@ const github = __importStar(__nccwpck_require__(3228));
 function get_jira_slug(content, project) {
     if (!content)
         return null;
-    const reg = new RegExp(`Relates to JIRA: ${project}-[0-9]+`);
+    const prefix = 'Relates to JIRA: ';
+    const reg = new RegExp(`${prefix}${project}-[0-9]+`);
     const matches = content.match(reg);
     if (!matches || matches.length === 0) {
         return null;
     }
-    return matches[0];
+    return matches[0].substring(prefix.length);
 }
 async function is_valid_issue(issue_num, octokit) {
     const issue = await octokit.rest.issues.get({

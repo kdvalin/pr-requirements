@@ -7,7 +7,7 @@ function get_jira_slug(
   project: string
 ): string | null {
   if (!content) return null
-  const prefix = "Relates to JIRA: "
+  const prefix = 'Relates to JIRA: '
   const reg = new RegExp(`${prefix}${project}-[0-9]+`)
   const matches = content.match(reg)
   if (!matches || matches.length === 0) {
