@@ -74,12 +74,13 @@ export async function run(): Promise<void> {
   const token = core.getInput('GITHUB_TOKEN', { required: true })
   const octokit = github.getOctokit(token)
   core.info(`Looking at PR ${github.context.issue.number}`)
-
-  const pr = await octokit.rest.issues.get({
+  const repo_info = {
     owner: github.context.issue.owner,
     repo: github.context.issue.repo,
     issue_number: github.context.issue.number
-  })
+  }
+
+  const pr = await octokit.rest.issues.get(repo_info)
   const pr_body = pr.data.body
   const related_issue_check = core.getBooleanInput('related_issue')
   if (related_issue_check) {
@@ -107,17 +108,26 @@ export async function run(): Promise<void> {
     }
 
     const jira_slug = get_jira_slug(pr_body, jira_project)
-
     if (!jira_slug) {
       core.setFailed('PR does not have a Jira ticket associated with it')
       return
     }
+    const comment_body = `This relates to [${jira_slug}](${jira_url}/browse/${jira_slug})`
 
-    await octokit.rest.issues.createComment({
-      owner: github.context.issue.owner,
-      repo: github.context.issue.repo,
-      issue_number: github.context.issue.number,
-      body: `This relates to [${jira_slug}](${jira_url}/browse/${jira_slug})`
+    const comments = await octokit.rest.issues.listComments(repo_info)
+
+    let comment_exists = false
+    comments.data.forEach(val => {
+      if (val.body === comment_body) {
+        comment_exists = true
+      }
     })
+
+    if (!comment_exists) {
+      await octokit.rest.issues.createComment({
+        ...repo_info,
+        body: comment_body
+      })
+    }
   }
 }
