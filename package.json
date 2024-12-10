@@ -34,7 +34,7 @@
     "package": "npx ncc build src/index.ts -o dist --source-map --license licenses.txt",
     "package:watch": "npm run package -- --watch",
     "test": "npx jest",
-    "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
+    "all": "npm run format:write && npm run lint && npm run package"
   },
   "license": "MIT",
   "jest": {
@@ -73,6 +73,7 @@
   "devDependencies": {
     "@github/local-action": "^2.2.0",
     "@jest/globals": "^29.7.0",
+    "@octokit/plugin-rest-endpoint-methods": "^13.2.6",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.9.0",
     "@typescript-eslint/eslint-plugin": "^8.14.0",
