@@ -52,3 +52,6 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           related_issue: true
+          jira_ticket: true
+          jira_url: issues.redhat.com
+          jira_project: RPOPC
