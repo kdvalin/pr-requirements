@@ -30030,11 +30030,12 @@ async function has_related_issue(body, octokit) {
     if (!body) {
         return false;
     }
-    const issue_matches = body.match(/#[0-9]+/);
+    const issue_matches = body.matchAll(/#[0-9]+/);
     if (!issue_matches) {
         return false;
     }
-    for (const match of issue_matches) {
+    for (const regExMatch of issue_matches) {
+        const match = regExMatch.toString();
         const valid_issue = await is_valid_issue(parseInt(match.substring(1)), octokit);
         if (valid_issue) {
             return true;
