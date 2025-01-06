@@ -30035,7 +30035,7 @@ async function has_related_issue(body, octokit) {
         return false;
     }
     for (const regExMatch of issue_matches) {
-        const match = regExMatch.toString();
+        const match = regExMatch[0];
         const valid_issue = await is_valid_issue(parseInt(match.substring(1)), octokit);
         if (valid_issue) {
             return true;
