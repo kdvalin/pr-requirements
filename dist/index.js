@@ -30004,6 +30004,7 @@ function get_jira_slug(content, project) {
     return matches[0].substring(prefix.length);
 }
 async function is_valid_issue(issue_num, octokit) {
+    core.info(`Searching for issue #${issue_num}`);
     const issue = await octokit.rest.issues.get({
         repo: github.context.issue.repo,
         owner: github.context.issue.owner,
@@ -30011,8 +30012,10 @@ async function is_valid_issue(issue_num, octokit) {
     });
     if (issue.status >= 400) {
         // 400+ is error zone
+        core.info(`Could not find issue #${issue_num}`);
         return false;
     }
+    core.info(`Found issue #${issue_num}`);
     return !issue.data.pull_request;
 }
 async function has_related_issue(body, octokit) {
@@ -30049,6 +30052,7 @@ async function run() {
         issue_number: github.context.issue.number
     };
     const pr = await octokit.rest.issues.get(repo_info);
+    core.info(`Found PR ${github.context.issue.number}`);
     const pr_body = pr.data.body;
     const related_issue_check = core.getBooleanInput('related_issue');
     if (related_issue_check) {
@@ -30077,6 +30081,7 @@ async function run() {
         }
         const comment_body = `This relates to [${jira_slug}](${jira_url}/browse/${jira_slug})`;
         const comments = await octokit.rest.issues.listComments(repo_info);
+        core.info(`Searching for Jira comment`);
         let comment_exists = false;
         comments.data.forEach(val => {
             if (val.body === comment_body) {
@@ -30084,6 +30089,7 @@ async function run() {
             }
         });
         if (!comment_exists) {
+            core.info(`Did not find Jira comment, adding.`);
             await octokit.rest.issues.createComment({
                 ...repo_info,
                 body: comment_body
