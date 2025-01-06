@@ -51,7 +51,7 @@ async function has_related_issue(
     return false
   }
 
-  const issue_matches = body.matchAll(/#[0-9]+/)
+  const issue_matches = body.matchAll(/#[0-9]+/g)
 
   if (!issue_matches) {
     return false

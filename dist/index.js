@@ -30030,7 +30030,7 @@ async function has_related_issue(body, octokit) {
     if (!body) {
         return false;
     }
-    const issue_matches = body.matchAll(/#[0-9]+/);
+    const issue_matches = body.matchAll(/#[0-9]+/g);
     if (!issue_matches) {
         return false;
     }
