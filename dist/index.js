@@ -29919,13 +29919,23 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 /**
  * The entrypoint for the action.
@@ -29961,13 +29971,23 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = run;
 const core = __importStar(__nccwpck_require__(7484));
@@ -29984,26 +30004,38 @@ function get_jira_slug(content, project) {
     return matches[0].substring(prefix.length);
 }
 async function is_valid_issue(issue_num, octokit) {
-    const issue = await octokit.rest.issues.get({
-        repo: github.context.issue.repo,
-        owner: github.context.issue.owner,
-        issue_number: issue_num
-    });
-    if (issue.status >= 400) {
-        // 400+ is error zone
+    core.info(`Searching for issue #${issue_num}`);
+    let issue = null;
+    try {
+        issue = await octokit.rest.issues.get({
+            repo: github.context.issue.repo,
+            owner: github.context.issue.owner,
+            issue_number: issue_num
+        });
+        if (issue.status >= 400) {
+            // 400+ is error zone
+            core.info(`Could not find issue #${issue_num}`);
+            return false;
+        }
+        core.info(`Found issue #${issue_num}`);
+    }
+    catch (err) {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        core.warning(`Unknown error fetching issue, ${err}`);
         return false;
     }
-    return !issue.data.pull_request;
+    return issue && !issue.data.pull_request;
 }
 async function has_related_issue(body, octokit) {
     if (!body) {
         return false;
     }
-    const issue_matches = body.match(/#[0-9]+/);
+    const issue_matches = body.matchAll(/#[0-9]+/g);
     if (!issue_matches) {
         return false;
     }
-    for (const match of issue_matches) {
+    for (const regExMatch of issue_matches) {
+        const match = regExMatch[0];
         const valid_issue = await is_valid_issue(parseInt(match.substring(1)), octokit);
         if (valid_issue) {
             return true;
@@ -30029,6 +30061,7 @@ async function run() {
         issue_number: github.context.issue.number
     };
     const pr = await octokit.rest.issues.get(repo_info);
+    core.info(`Found PR ${github.context.issue.number}`);
     const pr_body = pr.data.body;
     const related_issue_check = core.getBooleanInput('related_issue');
     if (related_issue_check) {
@@ -30057,6 +30090,7 @@ async function run() {
         }
         const comment_body = `This relates to [${jira_slug}](${jira_url}/browse/${jira_slug})`;
         const comments = await octokit.rest.issues.listComments(repo_info);
+        core.info(`Searching for Jira comment`);
         let comment_exists = false;
         comments.data.forEach(val => {
             if (val.body === comment_body) {
@@ -30064,6 +30098,7 @@ async function run() {
             }
         });
         if (!comment_exists) {
+            core.info(`Did not find Jira comment, adding.`);
             await octokit.rest.issues.createComment({
                 ...repo_info,
                 body: comment_body
