@@ -30046,9 +30046,9 @@ async function run() {
     const repo_info = {
         owner: github.context.issue.owner,
         repo: github.context.issue.repo,
-        pull_number: github.context.issue.number
+        issue_number: github.context.issue.number
     };
-    const pr = await octokit.rest.pulls.get(repo_info);
+    const pr = await octokit.rest.issues.get(repo_info);
     const pr_body = pr.data.body;
     const related_issue_check = core.getBooleanInput('related_issue');
     if (related_issue_check) {
@@ -30076,10 +30076,7 @@ async function run() {
             return;
         }
         const comment_body = `This relates to [${jira_slug}](${jira_url}/browse/${jira_slug})`;
-        const comments = await octokit.rest.issues.listComments({
-            ...repo_info,
-            issue_number: repo_info.pull_number
-        });
+        const comments = await octokit.rest.issues.listComments(repo_info);
         let comment_exists = false;
         comments.data.forEach(val => {
             if (val.body === comment_body) {
@@ -30089,7 +30086,6 @@ async function run() {
         if (!comment_exists) {
             await octokit.rest.issues.createComment({
                 ...repo_info,
-                issue_number: repo_info.pull_number,
                 body: comment_body
             });
         }
