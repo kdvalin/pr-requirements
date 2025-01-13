@@ -1,7 +1,7 @@
 # PR Requirement Action
 
-This GitHub action is meant to help enforce certain PR requirements, such as
-referencing an issue or referencing a JIRA ticket. This action will fail if the
+This GitHub Action is meant to help enforce certain PR requirements, such as
+referencing an issue or referencing a Jira ticket. This action will fail if the
 specified requirements are not fulfilled.
 
 ## Supported Requirements
@@ -9,12 +9,12 @@ specified requirements are not fulfilled.
 Currently the following requirements can be enforced with this action.
 
 - Referencing an issue from within the repository
-- Referencing a JIRA ticket, in a format that
+- Referencing a Jira ticket, in a format that
   [Sync2Jira](https://github.com/release-engineering/Sync2Jira) expects
-  - `Relates to JIRA: <Project>-<Ticket Number>`
-  - This action will add a comment to the PR with a link to the JIRA ticket
+  - `Relates to Jira: <Project>-<Ticket Number>`
+  - This action will add a comment to the PR with a link to the Jira ticket
 
-# Usage
+## Usage
 
 An example workflow is provided below
 
@@ -38,12 +38,28 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to read PR descriptions
 ```
 
-## Options
+### Options
 
-| variable name | type    | default | notes                                                                                                                  |
-| ------------- | ------- | ------- | ---------------------------------------------------------------------------------------------------------------------- |
-| GITHUB_TOKEN  | string  | `null`  | Used to get PR descriptions, use `${secrets.GITHUB_TOKEN}` within your workflow file.                                  |
-| related_issue | boolean | true    | Checks if the PR has a related issue in it's description                                                               |
-| jira_ticket   | boolean | false   | Checks if the PR has a jira ticket mentioned in it's description, requires `jira_project` and `jira_url` to be defined |
-| jira_project  | string  | Example | The JIRA project slug that should be searched for within the PR description                                            |
-| jira_url      | string  | `null`  | The URL to the JIRA instance where the ticket lives, this is to provide a comment in the PR linking to the ticket      |
+- GITHUB_TOKEN
+  - Used to get PR descriptions, use `${secrets.GITHUB_TOKEN}` within your
+    workflow file.
+  - type: string
+  - default: `null`
+- related_issue
+  - Checks if the PR has a related issue in it's description
+  - type: boolean
+  - default: true
+- jira_ticket
+  - Checks if the PR has a Jira ticket mentioned in it's description, requires
+    `jira_project` and `jira_url` to be defined
+  - type: boolean
+  - default: false
+- jira_project
+  - The Jira project slug that should be searched for within the PR description
+  - type: string
+  - default: Example
+- jira_url
+  - The URL to the Jira instance where the ticket lives, this is to provide a
+    comment in the PR linking to the ticket
+  - type: string
+  - default: `null`
