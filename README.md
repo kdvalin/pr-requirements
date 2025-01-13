@@ -33,7 +33,7 @@ jobs:
     name: Check PR
     runs-on: ubuntu-latest
     steps:
-      - uses: kdvalin/pr-requirements
+      - uses: redhat-performance/pr-requirements
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to read PR descriptions
 ```
