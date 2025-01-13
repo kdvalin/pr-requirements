@@ -1,10 +1,10 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'pr-requirements'
+description: 'Provides a status check on GitHub issue refernces and JIRA tickets'
+author: 'kdvalin'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: 'heart'
+  icon: 'git-pull-request'
   color: 'green'
 
 # Define your inputs here.
@@ -25,11 +25,6 @@ inputs:
     default: 'Example'
   jira_url:
     description: 'URL to jira instance, only supporting public servers for now'
-
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Your output description here'
 
 runs:
   using: node20
