@@ -1,5 +1,6 @@
 name: 'pr-requirements'
-description: 'Provides a status check on GitHub issue refernces and JIRA tickets'
+description:
+  'Provides a status check on GitHub issue references and JIRA tickets'
 author: 'kdvalin'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
